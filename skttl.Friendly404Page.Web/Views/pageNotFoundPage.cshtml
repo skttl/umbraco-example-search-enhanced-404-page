@@ -18,12 +18,10 @@
 
     <div class="container">
         <div>
-            <p>The page you were looking for, could not be found!</p>
-
-
+            <h3>@Context.Request.Path could not be found!</h3>
             @{
                 var query = Context.Request.Path.ToString().ReplaceNonAlphanumericChars(" ");
-                var search = FullTextSearchHelper.Search(new Search(query).SetFuzzyness(1.0).SetCulture(Model.GetCultureFromDomains()), 1);
+                var search = FullTextSearchHelper.Search(query, Model.GetCultureFromDomains(), 1);
 
                 @if (search.TotalResults > 0)
                 {
