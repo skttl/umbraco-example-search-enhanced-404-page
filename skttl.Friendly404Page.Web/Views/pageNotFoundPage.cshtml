@@ -1,0 +1,53 @@
+﻿@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels
+@using Our.Umbraco.FullTextSearch.Models
+@using Umbraco.Extensions
+@inject Our.Umbraco.FullTextSearch.Helpers.FullTextSearchHelper FullTextSearchHelper
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.PageNotFoundPage>
+@{
+    Layout = "master.cshtml";
+}
+<section class="section section--themed section--header section--content-center-bottom">
+    <div class="section__hero-content">
+        <h1 class="no-air">
+            Oops - not found!
+        </h1>
+    </div>
+</section>
+
+<section class="section">
+
+    <div class="container">
+        <div>
+            <p>The page you were looking for, could not be found!</p>
+
+
+            @{
+                var query = Context.Request.Path.ToString().ReplaceNonAlphanumericChars(" ");
+                var search = FullTextSearchHelper.Search(new Search(query).SetFuzzyness(1.0).SetCulture(Model.GetCultureFromDomains()), 1);
+
+                @if (search.TotalResults > 0)
+                {
+                    <p>Maybe these pages can help you?</p>
+
+                    <div class="blogposts">
+                        @foreach (var result in search.Results)
+                        {
+                            <a href="@result.Content.Url()" class="blogpost">
+                                <div class="blogpost-meta">
+                                    <small class="blogpost-cat">
+                                        @string.Join(" / ", result.Content.AncestorsOrSelf().Reverse().Select(x => x.Name))
+                                    </small>
+                                </div>
+                                <h3 class="blogpost-title">@result.Title</h3>
+                                <div class="blogpost-excerpt">@result.Summary</div>
+                            </a>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+</section>
+
+<link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-blockgrid.css")" />
